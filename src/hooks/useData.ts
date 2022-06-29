@@ -105,7 +105,7 @@ const useData = () => {
     fetchData();
   }, []);
 
-  return { data };
+  return { data, setData };
 };
 
 export default useData;
