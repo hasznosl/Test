@@ -1,9 +1,10 @@
 import React from "react";
+import Navigation from "./components/Navigation";
 
 function App() {
   return (
     <div>
-      <h1>Pharos Coding Exercise</h1>
+      <Navigation />
     </div>
   );
 }
