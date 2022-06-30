@@ -4,7 +4,14 @@ import FilterContext from "../contexts/FilterContext";
 const Items = () => {
   const { filteredData } = useContext(FilterContext);
   return (
-    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        height: "0px",
+      }}
+    >
       {filteredData.map((item) => (
         <div
           key={item.id}

@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import { useContext } from "react";
 import DataContext from "../contexts/DataContext";
 import NavigationContext from "../contexts/NavigationContext";
@@ -8,10 +9,12 @@ const Navigation = () => {
   const { data, toggle } = useContext(DataContext);
   const { setFolder, folder } = useContext(NavigationContext);
 
+  const theme = useTheme();
+
   const itemStyle = (lvl: number, isActive?: boolean) => ({
-    cursor: "pointer",
-    marginLeft: (lvl - 1) * IDENTATION,
-    textDecoration: isActive ? "underline" : "none",
+    cursor: lvl !== 4 ? "pointer" : "auto",
+    paddingLeft: (lvl - 1) * IDENTATION,
+    ...(isActive ? { backgroundColor: theme.palette.info.main } : {}),
   });
 
   return (
@@ -92,7 +95,7 @@ const Navigation = () => {
                                 thirdLvl
                               ].items.map((item) => (
                                 <div key={item.id} style={itemStyle(4)}>
-                                  item.name
+                                  {item.name}
                                 </div>
                               ))}
                           </div>

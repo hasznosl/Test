@@ -29,6 +29,7 @@ export interface Tree {
 const attachItemToBranch = (item: Item, tree: Tree) => {
   const currentItems =
     tree[item.BCAP1].children[item.BCAP2].children[item.BCAP3].items;
+
   tree[item.BCAP1].children[item.BCAP2].children[item.BCAP3].items = [
     ...currentItems,
     item,
@@ -41,9 +42,19 @@ const growBranch = (item: Item, tree: Tree) => {
   if (anyTree[item.BCAP1]) {
     if (anyTree[item.BCAP1].children[item.BCAP2]) {
       if (anyTree[item.BCAP1].children[item.BCAP2].children[item.BCAP3]) {
-        // branch is ready, nothing to do
+        if (
+          anyTree[item.BCAP1].children[item.BCAP2].children[item.BCAP3].items
+        ) {
+          // branch is ready, nothing to do
+        } else {
+          anyTree[item.BCAP1].children[item.BCAP2].children[item.BCAP3].items =
+            [];
+        }
       } else {
+        const currentChildren =
+          anyTree[item.BCAP1].children[item.BCAP2].children;
         anyTree[item.BCAP1].children[item.BCAP2].children = {
+          ...currentChildren,
           [item.BCAP3]: {
             isOpen: false,
             items: [],
@@ -51,7 +62,9 @@ const growBranch = (item: Item, tree: Tree) => {
         };
       }
     } else {
+      const currentChildren = anyTree[item.BCAP1].children;
       anyTree[item.BCAP1].children = {
+        ...currentChildren,
         [item.BCAP2]: {
           isOpen: false,
           children: {
@@ -148,9 +161,11 @@ const useData = () => {
   };
 
   const storeData = (data: Item[]) => {
-    setRawData(data.sort((a, b) => a.name.localeCompare(b.name)));
+    const sortedData = data.sort((a, b) => a.BCAP1.localeCompare(b.BCAP1));
+
+    setRawData(sortedData);
     let tree: Tree = {};
-    data.forEach((item) => {
+    sortedData.forEach((item) => {
       attachItemToTree(item, tree);
     });
     setData(tree);

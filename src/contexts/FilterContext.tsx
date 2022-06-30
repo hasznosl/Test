@@ -28,7 +28,7 @@ export const FilterContextProvider = ({
   const [value, setValue] = useState<number>(100);
 
   const filteredData = navigatedRawData
-    .filter((item) => item.spend < (value / 100) * max)
+    .filter((item) => item.spend <= (value / 100) * max)
     .sort((a1, a2) => a1.spend - a2.spend);
 
   return (
