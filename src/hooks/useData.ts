@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface Item {
   BCAP1: string;
@@ -9,7 +9,7 @@ export interface Item {
   spend: number;
 }
 
-interface Tree {
+export interface Tree {
   [bcap1Id: string]: {
     isOpen: boolean;
     children: {
@@ -87,13 +87,68 @@ const attachItemToTree = (item: Item, tree: Tree) => {
   attachItemToBranch(item, tree);
 };
 
+export interface ToggleArgs {
+  firstLvl: string;
+  secondLvl?: string;
+  thirdLvl?: string;
+  isOpen: boolean;
+}
+
 const useData = () => {
+  const [rawData, setRawData] = useState<Item[]>([]);
   const [data, setData] = useState<Tree>({});
 
-  const fetchData = async () => {
-    const data: Item[] = await (
-      await fetch("http://localhost:8080/data")
-    ).json();
+  const toggle = ({ firstLvl, secondLvl, thirdLvl, isOpen }: ToggleArgs) => {
+    if (secondLvl && thirdLvl) {
+      const newData = {
+        ...data,
+        [firstLvl]: {
+          ...data[firstLvl],
+          children: {
+            ...data[firstLvl].children,
+            [secondLvl]: {
+              ...data[firstLvl].children[secondLvl],
+              children: {
+                ...data[firstLvl].children[secondLvl].children,
+                [thirdLvl]: {
+                  ...data[firstLvl].children[secondLvl].children[thirdLvl],
+                  isOpen: !isOpen,
+                },
+              },
+            },
+          },
+        },
+      };
+      setData(newData);
+    } else if (secondLvl && !thirdLvl) {
+      const newData = {
+        ...data,
+        [firstLvl]: {
+          ...data[firstLvl],
+          children: {
+            ...data[firstLvl].children,
+            [secondLvl]: {
+              ...data[firstLvl].children[secondLvl],
+              isOpen: !isOpen,
+            },
+          },
+        },
+      };
+      setData(newData);
+    } else {
+      const newData = {
+        ...data,
+        [firstLvl]: {
+          ...data[firstLvl],
+          isOpen: !isOpen,
+        },
+      };
+      setData(newData);
+    }
+  };
+
+  const storeData = (data: Item[]) => {
+    setRawData(data);
     let tree: Tree = {};
     data.forEach((item) => {
       attachItemToTree(item, tree);
@@ -101,11 +156,19 @@ const useData = () => {
     setData(tree);
   };
 
-  useEffect(() => {
-    fetchData();
+  const fetchAndStoreData = useCallback(async () => {
+    const data: Item[] = await (
+      await fetch("http://localhost:8080/data")
+    ).json();
+
+    storeData(data);
   }, []);
 
-  return { data, setData };
+  useEffect(() => {
+    fetchAndStoreData();
+  }, [fetchAndStoreData]);
+
+  return { data, rawData, toggle };
 };
 
 export default useData;

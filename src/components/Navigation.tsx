@@ -1,13 +1,17 @@
-import useData from "../hooks/useData";
+import { useContext } from "react";
+import DataContext from "../contexts/DataContext";
+import NavigationContext from "../contexts/NavigationContext";
 
 const IDENTATION = 8;
 
 const Navigation = () => {
-  const { data, setData } = useData();
+  const { data, toggle } = useContext(DataContext);
+  const { setFolder, folder } = useContext(NavigationContext);
 
-  const itemStyle = (lvl: number) => ({
+  const itemStyle = (lvl: number, isActive?: boolean) => ({
     cursor: "pointer",
     marginLeft: (lvl - 1) * IDENTATION,
+    textDecoration: isActive ? "underline" : "none",
   });
 
   return (
@@ -15,20 +19,18 @@ const Navigation = () => {
       <div>Navigation</div>
       {Object.keys(data).map((firstLvl) => {
         const isFirstLevelOpen = data[firstLvl].isOpen;
-
+        const isFirstLevelActive = !!(
+          folder &&
+          folder.label === firstLvl &&
+          folder.level === "BCAP1"
+        );
         return (
           <div key={firstLvl}>
             <div
-              style={itemStyle(1)}
+              style={itemStyle(1, isFirstLevelActive)}
               onClick={() => {
-                const newData = {
-                  ...data,
-                  [firstLvl]: {
-                    ...data[firstLvl],
-                    isOpen: !isFirstLevelOpen,
-                  },
-                };
-                setData(newData);
+                toggle({ firstLvl, isOpen: isFirstLevelOpen });
+                setFolder({ level: "BCAP1", label: firstLvl });
               }}
             >
               {firstLvl}
@@ -37,26 +39,22 @@ const Navigation = () => {
               Object.keys(data[firstLvl].children).map((secondLvl) => {
                 const isSecondLevelOpen =
                   data[firstLvl].children[secondLvl].isOpen;
-
+                const isSecondLevelActive = !!(
+                  folder &&
+                  folder.label === secondLvl &&
+                  folder.level === "BCAP2"
+                );
                 return (
                   <div key={secondLvl}>
                     <div
-                      style={itemStyle(2)}
+                      style={itemStyle(2, isSecondLevelActive)}
                       onClick={() => {
-                        const newData = {
-                          ...data,
-                          [firstLvl]: {
-                            ...data[firstLvl],
-                            children: {
-                              ...data[firstLvl].children,
-                              [secondLvl]: {
-                                ...data[firstLvl].children[secondLvl],
-                                isOpen: !isSecondLevelOpen,
-                              },
-                            },
-                          },
-                        };
-                        setData(newData);
+                        toggle({
+                          firstLvl,
+                          secondLvl,
+                          isOpen: isSecondLevelOpen,
+                        });
+                        setFolder({ level: "BCAP2", label: secondLvl });
                       }}
                     >
                       {secondLvl}
@@ -68,35 +66,23 @@ const Navigation = () => {
                         const isThirdLevelOpen =
                           data[firstLvl].children[secondLvl].children[thirdLvl]
                             .isOpen;
-
+                        const isThirdLevelActive = !!(
+                          folder &&
+                          folder.label === thirdLvl &&
+                          folder.level === "BCAP3"
+                        );
                         return (
                           <div key={thirdLvl}>
                             <div
-                              style={itemStyle(3)}
+                              style={itemStyle(3, isThirdLevelActive)}
                               onClick={() => {
-                                const newData = {
-                                  ...data,
-                                  [firstLvl]: {
-                                    ...data[firstLvl],
-                                    children: {
-                                      ...data[firstLvl].children,
-                                      [secondLvl]: {
-                                        ...data[firstLvl].children[secondLvl],
-                                        children: {
-                                          ...data[firstLvl].children[secondLvl]
-                                            .children,
-                                          [thirdLvl]: {
-                                            ...data[firstLvl].children[
-                                              secondLvl
-                                            ].children[thirdLvl],
-                                            isOpen: !isThirdLevelOpen,
-                                          },
-                                        },
-                                      },
-                                    },
-                                  },
-                                };
-                                setData(newData);
+                                toggle({
+                                  firstLvl,
+                                  secondLvl,
+                                  thirdLvl,
+                                  isOpen: isThirdLevelOpen,
+                                });
+                                setFolder({ level: "BCAP3", label: thirdLvl });
                               }}
                             >
                               {thirdLvl}
