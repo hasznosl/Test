@@ -34,8 +34,6 @@ export const NavigationContextProvider = ({
     ? rawData.filter((item) => item[folder.level] === folder.label)
     : rawData;
 
-  console.log({ navigatedRawData });
-
   return (
     <NavigationContext.Provider
       value={{ folder, setFolder, toggle, navigatedRawData }}

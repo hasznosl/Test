@@ -6,12 +6,14 @@ interface Filter {
   value: number;
   setValue: React.Dispatch<React.SetStateAction<number>>;
   filteredData: Item[];
+  max: number;
 }
 
 const FilterContext = React.createContext<Filter>({
   value: 0,
   setValue: () => {},
   filteredData: [],
+  max: 0,
 });
 
 export const FilterContextProvider = ({
@@ -21,16 +23,21 @@ export const FilterContextProvider = ({
 }) => {
   const { navigatedRawData } = useContext(NavigationContext);
 
-  const [value, setValue] = useState<number>(
-    Math.max(...navigatedRawData.map((item) => item.spend))
-  );
+  const max = Math.max(...navigatedRawData.map((item) => item.spend));
+
+  const [value, setValue] = useState<number>(100);
+
+  const filteredData = navigatedRawData
+    .filter((item) => item.spend < (value / 100) * max)
+    .sort((a1, a2) => a1.spend - a2.spend);
 
   return (
     <FilterContext.Provider
       value={{
         value,
         setValue,
-        filteredData: navigatedRawData.filter((item) => item.spend < value),
+        filteredData,
+        max,
       }}
     >
       {children}

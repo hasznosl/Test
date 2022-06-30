@@ -148,7 +148,7 @@ const useData = () => {
   };
 
   const storeData = (data: Item[]) => {
-    setRawData(data);
+    setRawData(data.sort((a, b) => a.name.localeCompare(b.name)));
     let tree: Tree = {};
     data.forEach((item) => {
       attachItemToTree(item, tree);

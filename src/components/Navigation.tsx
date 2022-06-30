@@ -15,8 +15,8 @@ const Navigation = () => {
   });
 
   return (
-    <div>
-      <div>Navigation</div>
+    <div style={{ width: 200 }}>
+      <h1>Navigation</h1>
       {Object.keys(data).map((firstLvl) => {
         const isFirstLevelOpen = data[firstLvl].isOpen;
         const isFirstLevelActive = !!(
